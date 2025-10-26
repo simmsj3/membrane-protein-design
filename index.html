@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biochemistry Workshop: Membrane Protein Design</title>
+  <!-- External assets (with graceful fallbacks) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* ---------- Base styles ---------- */
+    :root {
+      --ink: #1c2633;
+      --muted: #5a6370;
+      --brand: #1a5f7a;
+      --brand-2: #0d47a1;
+      --bg: #f8f9fa;
+      --panel: #ffffff;
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      --bdr: #e6e8ec;
+      --callout-1: #e0f7fa;
+      --callout-2: #fefce8;
+      --callout-3: #eef2ff;
+      --success-ghost: #e8f5e9;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6; color: var(--ink); background: var(--bg); margin: 0;
+    }
+    a { color: #007bff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre, .mono { font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    /* ---------- Layout ---------- */
+    .container { max-width: 980px; margin: 20px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: var(--shadow); }
+    header h1 { text-align: center; font-size: 2.4rem; margin: 0 0 8px; color: var(--brand); }
+    header p.lead { text-align: center; color: var(--muted); margin: 0 0 16px; }
+
+    h2, h3, h4 { color: var(--brand); border-bottom: 2px solid #e0f7fa; padding-bottom: 8px; }
+    h2 { margin-top: 36px; font-size: 1.9rem; }
+    h3 { margin-top: 24px; font-size: 1.35rem; }
+
+    .mission-briefing, .info-box { background: var(--callout-1); border-left: 5px solid var(--brand); padding: 18px; border-radius: 8px; }
+    .critical-thinking, .team-huddle { background: var(--callout-2); border-left: 5px solid #ca8a04; padding: 18px; border-radius: 8px; }
+    .pro-tip { background: var(--callout-3); border-left: 5px solid #4f46e5; padding: 16px; border-radius: 8px; }
+    .assessment, .resources, .rubric { background: var(--success-ghost); border-left: 5px solid #2e7d32; padding: 18px; border-radius: 8px; }
+
+    .grid { display: grid; gap: 16px; }
+    .grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    figure { margin: 18px auto; text-align: center; }
+    figcaption { font-style: italic; color: var(--muted); margin-top: 8px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .figure-img { max-width: 100%; border-radius: 8px; border: 1px solid var(--bdr); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--bdr); padding: 8px; text-align: left; }
+    thead th { background: #e0f7fa; color: var(--brand); }
+
+    blockquote { border-left: 4px solid #cbd5e1; padding-left: 12px; color: #475569; margin-left: 0; font-style: italic; }
+
+    /* Accessibility helpers */
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus { left: 1rem; top: 1rem; background: #fff; padding: .5rem .75rem; box-shadow: var(--shadow); border-radius: 6px; }
+    :focus { outline: 3px solid var(--brand); outline-offset: 2px; }
+
+    /* Print styles */
+    @media print {
+      body { background: #fff; }
+      .container { box-shadow: none; }
+      a::after { content: " (" attr(href) ")"; font-size: 90%; }
+      .skip-link, .pro-tip button, .quiz button { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <div class="container">
+    <header>
+      <h1><span aria-hidden="true" class="fa-solid fa-dna" style="color: var(--brand);"></span> Biochemistry Computer-Aided Learning Workshop</h1>
+      <p class="lead">Designing Coiled-Coil Membrane Proteins (2nd Year Biochemistry)</p>
+    </header>
+
+    <main id="main" role="main" aria-label="Workshop content">
+
+      <!-- Learning outcomes -->
+      <section aria-labelledby="learning-outcomes">
+        <h2 id="learning-outcomes">Learning Outcomes</h2>
+        <ul>
+          <li>Annotate a 21-residue sequence into heptads (a–g) and justify residue choices at a/d vs b/c/f vs e/g.</li>
+          <li>Build and score a six-helix bundle in CCBuilder and interpret BUDE energy qualitatively.</li>
+          <li>Predict and rationalise ΔG<sub>transfer</sub> trends across three membrane compositions using PPM 3.0.</li>
+          <li>Run hypothesis-driven iterations and present claim–evidence–reasoning for design decisions.</li>
+          <li>Produce a clear submission with annotated sequences, scores, and brief discussion.</li>
+        </ul>
+      </section>
+
+      <!-- Run sheet -->
+      <section class="info-box" aria-label="Schedule">
+        <h3>Suggested Run Sheet (120 minutes)</h3>
+        <ol>
+          <li>Intro + outcomes: 10 min</li>
+          <li>Interface analysis with MemProtMD: 15 min</li>
+          <li>Core packing primer (membrane-focused): 15 min</li>
+          <li>Team huddle and champion sequence: 15 min</li>
+          <li>Round-robin iterations (≥3 cycles): 45 min</li>
+          <li>PPM multi-membrane test: 10 min</li>
+          <li>Wrap-up + submission: 10 min</li>
+        </ol>
+      </section>
+
+      <!-- Introduction and mission -->
+      <section>
+        <h2>Introduction: Thinking Like a Protein Designer</h2>
+        <p>Designing a new protein requires balancing competing forces. Your aim is to optimise thermodynamic stability through informed choices that trade off protein–protein packing, protein–lipid interactions, enthalpy (ΔH), and entropy (TΔS). Treat the activity as rational, hypothesis-driven engineering rather than trial-and-error.</p>
+        <div class="mission-briefing">
+          <h3><span aria-hidden="true" class="fa-solid fa-bullseye"></span> Mission Briefing</h3>
+          <p>Last session, you each designed a single 21-amino-acid helix. Today, you will work as a team to transform those designs into a functional six-helix bundle with a polar channel. First, select a champion starting sequence. Then iteratively optimise for packing and membrane insertion.</p>
+        </div>
+      </section>
+
+      <!-- Coiled-coil principle + figures -->
+      <section>
+        <h2>Part 1: The Coiled Coil Principle</h2>
+        <p>The coiled coil follows a seven-residue <em>heptad repeat</em> <span class="mono">(a,b,c,d,e,f,g)</span>. Positions a and d form the protein–protein core; positions b, c, and f present to lipids; positions e and g can line an internal channel.</p>
+        <div class="grid cols-3">
+          <figure>
+            <img class="figure-img" alt="Diagram of a heptad repeat coiled coil" src="https://pubs.rsc.org/image/article/2022/CC/d2cc04434j/d2cc04434j-f1_hi-res.gif" onerror="this.src='data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'520\' height=\'260\'><rect width=\'100%\' height=\'100%\' fill=\'%23eef\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' fill=\'%23333\'>Heptad diagram unavailable</text></svg>'" />
+            <figcaption><strong>Fig 1:</strong> Heptad repeat. Hydrophobic a/d pack inward; e/g can form channel interactions.</figcaption>
+          </figure>
+          <figure>
+            <a href="https://www.rcsb.org/3d-view/4PN9/1" target="_blank" title="Open interactive Mol* viewer (4PN9)">
+              <img class="figure-img" alt="Top-down view of a hexameric bundle (PDB 4PN9)" src="https://cdn.rcsb.org/images/structures/p9/4pn9/4pn9_assembly-1.jpeg" onerror="this.src='data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'520\' height=\'260\'><rect width=\'100%\' height=\'100%\' fill=\'%23eef\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' fill=\'%23333\'>4PN9 image unavailable</text></svg>'" />
+            </a>
+            <figcaption><strong>Fig 2:</strong> Hexameric bundle goal structure (PDB 4PN9). Click image for 3D.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Interface design using MemProtMD -->
+      <section>
+        <h2>Part 2: Cracking the Protein–Lipid Interface</h2>
+        <div class="critical-thinking">
+          <h3><span aria-hidden="true" class="fa-solid fa-magnifying-glass-chart"></span> What goes where?</h3>
+          <p>A membrane helix traverses distinct environments. For the central heptad, outside residues b/c/f should be strongly hydrophobic. For headgroup zones, enrich for <strong>aromatic anchors</strong> (Tyr/Trp) and <strong>snorkeling residues</strong> (Lys/Arg) where appropriate.</p>
+          <p><a href="https://memprotmd.bioch.ox.ac.uk/stats/" target="_blank" title="Look up residue enrichment at headgroup and interface layers; note W/Y/K/R trends.">Use MemProtMD Amino Acid Statistics</a>. If unavailable, assume Tyr/Trp enrichment near headgroups and Lys/Arg snorkeling toward the phosphate region.</p>
+        </div>
+      </section>
+
+      <!-- Core packing thermodynamics -->
+      <section>
+        <h2>Part 3: Advanced Architecture — Core Packing</h2>
+        <div class="critical-thinking">
+          <h3><span aria-hidden="true" class="fa-solid fa-puzzle-piece"></span> ΔG = ΔH − TΔS</h3>
+          <ul>
+            <li><strong>Enthalpy ΔH:</strong> Favourable van der Waals and specific hydrogen bonds in the dry core. Leu/Ile often give good packing enthalpy.</li>
+            <li><strong>Entropy TΔS:</strong> Constraining large flexible sidechains costs entropy. Smaller residues reduce the penalty but can underpack.</li>
+          </ul>
+          <p class="pro-tip"><strong>Channel chemistry:</strong> At e/g facing the lumen, prefer neutral polar residues (Ser/Thr) to avoid burying charge in low dielectric.</p>
+        </div>
+      </section>
+
+      <!-- Toolkit -->
+      <section>
+        <h2>Part 4: Toolkit — The Virtual Lab</h2>
+        <ul>
+          <li><a href="https://pragmaticproteindesign.bio.ed.ac.uk/builder/" target="_blank" title="Build bundles and compute BUDE energy">CCBuilder</a>: model six-helix bundles; more negative BUDE suggests tighter packing. Compare within a batch.</li>
+          <li><a href="https://opm.phar.umich.edu/ppm_server3_cgopm" target="_blank" title="Predict protein orientation and ΔGtransfer">PPM Server 3.0</a>: placement in membranes; more negative ΔG<sub>transfer</sub> indicates stronger insertion.</li>
+        </ul>
+
+        <h3>Amino Acid Cheat Sheet</h3>
+        <table>
+          <thead><tr><th>Category</th><th>Amino acids</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Small hydrophobic</strong></td><td>A, V</td><td>Low entropic cost; safe packers.</td></tr>
+            <tr><td><strong>Large hydrophobic</strong></td><td>L, I</td><td>Good packing enthalpy; watch entropy.</td></tr>
+            <tr><td><strong>Aromatic (anchors)</strong></td><td>Y, W</td><td>Prefer headgroup/interface regions.</td></tr>
+            <tr><td><strong>Polar uncharged</strong></td><td>S, T</td><td>Good for channel lining and H-bonds.</td></tr>
+            <tr><td><strong>Positive (snorkelers)</strong></td><td>K, R</td><td>Interact with headgroups when exposed.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Team huddle -->
+      <section>
+        <h2>Part 5: Team Huddle — Choose Your Champion Helix</h2>
+        <div class="team-huddle">
+          <h3><span aria-hidden="true" class="fa-solid fa-users"></span> Huddle workflow</h3>
+          <ol>
+            <li>Lay out all 21-mers with a–g annotation. Check zone-appropriate residues at b/c/f.</li>
+            <li>Select a single best sequence or synthesise a hybrid by combining strong features.</li>
+            <li>Document your justification referencing interface rules and core packing logic.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Roles + Dialogue -->
+      <section>
+        <h2>Part 6: Assign Roles & Begin Iteration</h2>
+        <div class="grid cols-3">
+          <div class="mission-briefing"><h3>The Architect</h3><p><strong>Focus:</strong> a/d core packing, ΔH vs TΔS. <strong>Score:</strong> BUDE (CCBuilder).</p></div>
+          <div class="mission-briefing"><h3>The Membrane Guru</h3><p><strong>Focus:</strong> b/c/f interface and anchors. <strong>Score:</strong> ΔG<sub>transfer</sub> (PPM).</p></div>
+          <div class="mission-briefing"><h3>The Channel Engineer</h3><p><strong>Focus:</strong> e/g channel polarity and continuity.</p></div>
+        </div>
+        <blockquote>
+          <p><strong>Architect:</strong> “BUDE is weak; swap a/d to Leu/Ile to improve packing.”</p>
+          <p><strong>Channel Engineer:</strong> “Channel hydrophobic; convert g→Thr at each heptad.”</p>
+          <p><strong>Membrane Guru:</strong> “Add Trp/Tyr at headgroup heptads and Lys snorkels.”</p>
+        </blockquote>
+        <div class="pro-tip"><strong>Iterate carefully:</strong> change one or two residues at a time to attribute effects.</div>
+      </section>
+
+      <!-- Worked example -->
+      <section>
+        <details>
+          <summary><strong>Worked Example (calibration only)</strong></summary>
+          <pre class="mono">Heptad labels:   a b c d e f g | a b c d e f g | a b c d e f g
+Sequence (21 aa): L A F L S I K | L V F L T I K | L Y F L S V W
+Rationale:
+- a/d: Leu-rich for packing; occasional Ile to modulate geometry.
+- e/g: Ser/Thr to support internal H-bonding without charge burial.
+- b/c/f: Core heptad aliphatic; interface heptads add Tyr/Trp anchors and Lys snorkels.</pre>
+        </details>
+      </section>
+
+      <!-- Metrics interpretation -->
+      <section>
+        <h2>Interpreting Scores</h2>
+        <table>
+          <thead><tr><th>Metric</th><th>Typical range</th><th>How to use</th></tr></thead>
+          <tbody>
+            <tr><td>BUDE energy (CCBuilder)</td><td>≈ −10 to −40 (relative)</td><td>More negative suggests tighter packing. Compare within your team across iterations.</td></tr>
+            <tr><td>ΔG<sub>transfer</sub> (PPM 3.0)</td><td>≈ −5 to −30 kcal·mol⁻¹</td><td>More negative suggests stronger insertion. Compare across membrane types.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Lightweight validator + wheel -->
+      <section>
+        <h2>Sequence Tools (Optional, On-page)</h2>
+        <div class="grid cols-3">
+          <div class="info-box">
+            <h3>21-mer Validator</h3>
+            <p>Paste your 21-residue sequence to check basic issues.</p>
+            <input id="seqInput" type="text" inputmode="text" placeholder="e.g. LAFLSIKLVFLTIKLYFLSVW" style="width:100%;padding:8px;border:1px solid var(--bdr);border-radius:6px;" />
+            <p id="seqMsg" class="mono" aria-live="polite" style="margin-top:8px;color:#374151;"></p>
+          </div>
+          <div class="info-box">
+            <h3>Heptad Table (prefilled)</h3>
+            <table aria-label="Heptad annotation table">
+              <thead><tr><th>#</th><th>Heptad</th><th>Residue</th><th>Zone</th><th>Role</th></tr></thead>
+              <tbody id="heptadRows"></tbody>
+            </table>
+          </div>
+          </div>
+      </section>
+
+      <!-- Advanced analysis -->
+      <section>
+        <h2>Part 7: Advanced Analysis — Stress-test Across Membranes</h2>
+        <ol>
+          <li>Export your best model and submit to PPM 3.0 three times.</li>
+          <li>Select <em>Mammalian plasma</em>, <em>Gram-negative outer</em>, and <em>Fungal plasma</em> libraries.</li>
+          <li>Record ΔG<sub>transfer</sub> values and discuss trends. Universal vs specialised design?</li>
+        </ol>
+      </section>
+
+      <!-- Documentation Template (CER) -->
+      <section>
+        <h2>Design Documentation Template</h2>
+        <div class="info-box">
+          <h3>Round 1 — Champion Helix</h3>
+          <p><strong>Sequence (21 aa, annotated a–g):</strong> ________________________________</p>
+          <p><strong>Justification for choice:</strong> _______________________________________</p>
+          <p><strong>Architect score (BUDE):</strong> _____ &nbsp; <strong>PPM ΔG (Mammalian):</strong> _____</p>
+        </div>
+        <div class="info-box">
+          <h3>Iteration N</h3>
+          <p><strong>Hypothesis:</strong> _________________________________________________</p>
+          <p><strong>Change(s):</strong> _________________________________________________</p>
+          <p><strong>Results:</strong> BUDE = _____; ΔG = _____</p>
+          <p><strong>Claim:</strong> _________________________________________________</p>
+          <p><strong>Evidence:</strong> _________________________________________________</p>
+          <p><strong>Reasoning:</strong> _________________________________________________</p>
+        </div>
+        <div class="info-box">
+          <h3>Advanced Analysis</h3>
+          <table>
+            <thead><tr><th>Membrane</th><th>ΔG<sub>transfer</sub> (kcal·mol⁻¹)</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Mammalian plasma</td><td></td><td></td></tr>
+              <tr><td>Gram-negative outer</td><td></td><td></td></tr>
+              <tr><td>Fungal plasma</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Quick quiz -->
+      <section class="quiz">
+        <details>
+          <summary><strong>Quick Check (5 min)</strong></summary>
+          <ol>
+            <li>Which positions form the coiled-coil core? <button type="button" onclick="alert('a and d positions form the core.')">Show answer</button></li>
+            <li>Which residues commonly act as membrane anchors? <button type="button" onclick="alert('Tyrosine and Tryptophan.')">Show answer</button></li>
+            <li>Why avoid charged sidechains in a/d positions? <button type="button" onclick="alert('They are destabilising in the dry core (low dielectric).')">Show answer</button></li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- Rubric -->
+      <section class="rubric">
+        <h2>Marking Rubric (Formative)</h2>
+        <table>
+          <thead><tr><th>Criterion</th><th>Excellent</th><th>Good</th><th>Developing</th></tr></thead>
+          <tbody>
+            <tr><td>Heptad design rationale</td><td>Accurate mapping and well-justified residue roles</td><td>Mostly correct; minor gaps</td><td>Partial/incorrect mapping</td></tr>
+            <tr><td>Iterative strategy</td><td>Hypothesis-driven, controlled edits</td><td>Some hypotheses; occasional batch edits</td><td>Ad hoc edits without rationale</td></tr>
+            <tr><td>Score interpretation</td><td>Compares trends across rounds and membranes</td><td>Reports values with some interpretation</td><td>Lists values without explanation</td></tr>
+            <tr><td>Communication</td><td>Clear, concise, reproducible</td><td>Understandable with minor ambiguity</td><td>Difficult to follow</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Pitfalls + checklist -->
+      <section>
+        <div class="pro-tip">
+          <h3>Common Pitfalls</h3>
+          <ul>
+            <li>Misaligned heptads placing charged residues at a/d.</li>
+            <li>Overuse of bulky hydrophobes causing clashes and poor BUDE.</li>
+            <li>All-aliphatic interfaces that insert well but fail to stabilise the channel.</li>
+          </ul>
+        </div>
+        <div class="assessment">
+          <h3>Submission Checklist</h3>
+          <ul>
+            <li><input type="checkbox" /> Champion sequence with a–g annotation</li>
+            <li><input type="checkbox" /> Two documented iterations with hypotheses</li>
+            <li><input type="checkbox" /> CCBuilder screenshot or file with BUDE</li>
+            <li><input type="checkbox" /> PPM results for three membranes with commentary</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Further resources -->
+      <section class="resources">
+        <h2><span aria-hidden="true" class="fa-solid fa-book"></span> Further Resources & Reading</h2>
+        <ul>
+          <li><strong>PDB-101:</strong> <a href="https://pdb101.rcsb.org/motm/70" target="_blank">Designed Proteins overview</a>.</li>
+          <li><strong>Aquaporins:</strong> <a href="https://pdb101.rcsb.org/motm/173" target="_blank">Molecule of the Month</a> for biological inspiration.</li>
+          <li><strong>HELIQUEST:</strong> <a href="https://heliquest.ipmc.cnrs.fr/" target="_blank">Helical wheel and helix properties</a>.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // ---------- Heptad table prefill ----------
+    (function initHeptadTable(){
+      const tbody = document.getElementById('heptadRows');
+      if (!tbody) return;
+      const letters = ['a','b','c','d','e','f','g'];
+      for (let i=0;i<21;i++) {
+        const tr = document.createElement('tr');
+        const hept = letters[i%7];
+        const zone = (i<7)?'Headgroup' : (i<14)?'Core' : 'Headgroup';
+        const role = (hept==='a'||hept==='d')? 'core' : (hept==='e'||hept==='g')? 'channel' : 'interface';
+        tr.innerHTML = `<td>${i+1}</td><td>${hept}</td><td contenteditable="true" class="mono" aria-label="Residue letter"></td><td>${zone}</td><td>${role}</td>`;
+        tbody.appendChild(tr);
+      }
+    })();
+
+    // ---------- 21-mer validator ----------
+    function validateSequence(seq){
+      const clean = (seq||'').toUpperCase().replace(/[^ACDEFGHIKLMNPQRSTVWY]/g,'');
+      if (clean.length!==21) return 'Sequence must be exactly 21 residues (ACDEFGHIKLMNPQRSTVWY).';
+      const hept = ['a','b','c','d','e','f','g'];
+      const charged = new Set(['D','E','K','R','H']);
+      let warnings = [];
+      for (let i=0;i<21;i++){
+        const pos = hept[i%7];
+        const aa = clean[i];
+        if ((pos==='a'||pos==='d') && charged.has(aa)) warnings.push(`Charged residue ${aa} at core position ${pos} (index ${i+1}).`);
+      }
+      return warnings.length? ('Warning: '+warnings.join(' ')) : 'Looks good. Heptad pattern fits and core is free of charge.';
+    }
+    const seqInput = document.getElementById('seqInput');
+    const seqMsg = document.getElementById('seqMsg');
+    if (seqInput && seqMsg){
+      const handler = ()=>{ seqMsg.textContent = validateSequence(seqInput.value.trim());  };
+      seqInput.addEventListener('input', handler);
+      handler();
+    }
+
